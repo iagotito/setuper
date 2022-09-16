@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+. "$SETUPER_WORKDIR/common"
+
+cli_help_test() {
+  echo "
+Command: test <anything>
+Usage:
+  test <anything>      Print the <anything>
+  *                    Help"
+  exit 1
+}
+
+[ ! -n "$1" ] && cli_help_test
+
+export SETUPER_PROJECT_NAME=$1
+
+cli_log "$1"

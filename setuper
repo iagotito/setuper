@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+
+# follow link
+SETUPER_PATH=$0
+if [[ -n $(readlink $SETUPER_PATH) ]]; then
+  SETUPER_PATH=$(readlink $SETUPER_PATH)
+fi
+
+export SETUPER_WORKDIR=$(dirname $SETUPER_PATH)
+. "$SETUPER_WORKDIR/common"
+
+cli_help() {
+  cli_name=$(basename $SETUPER_PATH)
+  echo "
+$cli_name
+Enviroment Setuper (theme, terminal, dotfiles etc)
+Version: $(cat $SETUPER_WORKDIR/VERSION)
+Usage: $cli_name [command]
+Commands:
+  deploy    Deploy
+  *         Help
+"
+  exit 1
+}
+
+case "$1" in
+  test|t)
+    $SETUPER_WORKDIR/commands/test $2
+    ;;
+  *)
+    cli_help
+    ;;
+esac
