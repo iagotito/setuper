@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -e
+
+help_msg() {
+  echo "Command: setuper <install|i> [apt-packages|snap-packages|programs|asdf|neovim|docker|dropbox|all]
+Usage:
+  install <program-name>  Install the program
+    List of avaliable programs:
+      - apt-packages: git curl build-essential vim zsh tmux snapd libssl-dev libpam-gnome-keyring xclip
+      - snap-packageS: discord insomnia gimp obs-studio
+      - programs: asdf neovim docker dropbox
+        > these programs can be passed individually
+  install all             Install all programs mentioned above
+  *                       Help
+"
+}
+
+[ -z "$1" ] && help_msg && exit 0
+
+case "$1" in
+  apt-packages)
+    echo "TODO"
+    ;;
+  *)
+    help_msg
+    ;;
+esac

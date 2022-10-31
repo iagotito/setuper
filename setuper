@@ -28,6 +28,9 @@ case "$1" in
   test|t)
     $CLI_WORKDIR/commands/test $2
     ;;
+  install|i)
+    $CLI_WORKDIR/commands/install ${@:2}
+    ;;
   *)
     help_msg
     ;;
