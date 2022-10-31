@@ -9,9 +9,8 @@ if [[ -n $(readlink $CLI_PATH) ]]; then
 fi
 
 export CLI_WORKDIR=$(dirname $CLI_PATH)
-. "$CLI_WORKDIR/common"
 
-cli_help() {
+help_msg() {
   cli_name=$(basename $CLI_PATH)
   echo "
 $cli_name
@@ -30,6 +29,6 @@ case "$1" in
     $CLI_WORKDIR/commands/test $2
     ;;
   *)
-    cli_help
+    help_msg
     ;;
 esac

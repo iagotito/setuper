@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 set -e
-. "$CLI_WORKDIR/common"
 
-cli_help_test() {
+help_msg() {
   echo "Command: setuper test <text>
 Usage:
   test <text>      Log the <text>
@@ -11,6 +10,6 @@ Usage:
 "
 }
 
-[ -z "$1" ] && cli_help_test && exit 0
+[ -z "$1" ] && help_msg && exit 0
 
-cli_log "$@"
+echo $@
