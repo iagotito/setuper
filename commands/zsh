@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -e
+
+cli_help() {
+  echo "
+Command: zsh [install | dotfiles]
+Usage:
+  TODO"
+  exit 1
+}
+
+zsh_install() {
+	sudo apt install -y zsh
+	exit 1
+}
+
+zsh_setup() {
+	CHSH_FILE="/etc/pam.d/chsh"
+	sudo sed -i "1 i\# This allows users of group chsh to change their shells without a password." $CHSH_FILE
+	sudo sed -i "2 i\# Per: http://serverfault.com/questions/202468/changing-the-shell-using-chsh-via-the-command-line-in-a-script" $CHSH_FILE
+	sudo sed -i "3 i\auth       sufficient   pam_wheel.so trust group=chsh" $CHSH_FILE
+	sudo groupadd -f chsh
+	sudo usermod -aG chsh $USER
+	chsh -s $(which zsh) $USER
+
+}
+
+zsh_dotfiles() {
+	sudo ln -s /srv/dotfiles/zsh/zshenv ~/.zshenv 2> /dev/null
+	mkdir -p ~/.config/zsh
+	sudo ln -s /srv/dotfiles/zsh/zshrc ~/.config/zsh/.zshrc 2> /dev/null
+	exit 1
+}
+
+[ ! -n "$1" ] && cli_help
+
+case "$1" in
+  install)
+	  zsh_install
+    ;;
+  setup)
+	zsh_setup
+	;;
+  dotfiles)
+	zsh_dotfiles
+	;;
+  *)
+    cli_help
+    ;;
+esac
+

@@ -7,10 +7,9 @@ CLI_PATH=$0
 if [[ -n $(readlink $CLI_PATH) ]]; then
   CLI_PATH=$(readlink $CLI_PATH)
 fi
+CLI_WORKDIR=$(dirname $CLI_PATH)
 
-export CLI_WORKDIR=$(dirname $CLI_PATH)
-
-help_msg() {
+cli_help() {
   cli_name=$(basename $CLI_PATH)
   echo "
 $cli_name
@@ -18,7 +17,12 @@ Enviroment Setuper (theme, terminal, dotfiles etc)
 Version: $(cat $CLI_WORKDIR/VERSION)
 Usage: $cli_name [command]
 Commands:
-  test      Test
+  test
+  zsh
+  tmux
+  neovim
+  terminal
+  system
   *         Help
 "
   exit 1
@@ -26,12 +30,25 @@ Commands:
 
 case "$1" in
   test|t)
-    $CLI_WORKDIR/commands/test $2
+    $CLI_WORKDIR/commands/test ${@:2}
     ;;
-  install|i)
-    $CLI_WORKDIR/commands/install ${@:2}
+  zsh)
+    $CLI_WORKDIR/commands/zsh ${@:2}
+    ;;
+  tmux)
+    $CLI_WORKDIR/commands/tmux ${@:2}
+    #sudo ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf 2> /dev/null;;
+    ;;
+  neovim)
+    $CLI_WORKDIR/commands/neovim ${@:2}
+    ;;
+  terminal)
+    $CLI_WORKDIR/commands/terminal ${@:2}
+    ;;
+  system)
+    $CLI_WORKDIR/commands/system ${@:2}
     ;;
   *)
-    help_msg
+    cli_help
     ;;
 esac

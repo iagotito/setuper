@@ -2,14 +2,15 @@
 
 set -e
 
-help_msg() {
-  echo "Command: setuper test <text>
+cli_help_test() {
+  echo "
+Command: test <anything>
 Usage:
-  test <text>      Log the <text>
-  *                Help
-"
+  test <anything>      Print the <anything>
+  *                    Help"
+  exit 1
 }
 
-[ -z "$1" ] && help_msg && exit 0
+[ ! -n "$1" ] && cli_help_test
 
 echo $@
