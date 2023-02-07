@@ -2,8 +2,9 @@
 
 set -e
 
-PACKAGES='git curl build-essential vim zsh tmux snapd libssl-dev libpam-gnome-keyring xclip'
+PACKAGES='git curl build-essential vim zsh tmux snapd libssl-dev libpam-gnome-keyring xclip exa'
 SNAPPACKAGES='insomnia' #'discord insomnia gimp obs-studio'
+NODEPACKAGES='tldr'
 PROGRAMS='asdf neovim docker dropbox'
 
 ASDF_DIR='/srv/asdf'
@@ -89,6 +90,12 @@ asdf_install_node() {
 	NODE_VERSION=$(asdf list all nodejs | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
 	asdf install nodejs $NODE_VERSION
 	asdf global nodejs $NODE_VERSION
+
+  setup_node_packages
+}
+
+setup_node_packages() {
+  npm install -g $NODEPACKAGES
 }
 
 asdf_install_golang() {
@@ -96,6 +103,8 @@ asdf_install_golang() {
 	GOLANG_VERSION=$(asdf list all golang | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
 	asdf install golang $GOLANG_VERSION
 	asdf global golang $GOLANG_VERSION
+
+  go install golang.org/x/tools/gopls@latest
 }
 
 asdf_setup() {
