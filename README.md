@@ -9,3 +9,26 @@ I will probably never do this though.
 
 Based on [Build a Custom CLI with
 Bash](https://medium.com/@brotandgames/build-a-custom-cli-with-bash-e3ce60cfb9a4)
+
+## How to use
+
+To install and configure dotfiles for everything (zsh, tmux, themes etc) run:
+
+```shell
+./setuper zsh all
+./setuper neovim all
+./setuper terminal all
+./setuper system all
+
+# or
+
+./setuper all
+```
+
+To read what action do, check the docs:
+
+```
+./setuper help
+
+./setuper [option] help
+```

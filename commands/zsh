@@ -6,16 +6,21 @@ cli_help() {
   echo "
 Command: zsh [install | dotfiles]
 Usage:
-  TODO"
+  setuper zsh install  -> install zsh
+  setuper zsh setup    -> set zsh as default shell to user
+  setuper zsh dotfiles -> create symlinks to zsh dotfiles
+  setuper zsh all      -> run all commands above"
+
   exit 1
 }
 
 zsh_install() {
+	echo "Installing zsh"
 	sudo apt install -y zsh
-	exit 1
 }
 
 zsh_setup() {
+	echo "Setting up zsh as default shell"
 	CHSH_FILE="/etc/pam.d/chsh"
 	sudo sed -i "1 i\# This allows users of group chsh to change their shells without a password." $CHSH_FILE
 	sudo sed -i "2 i\# Per: http://serverfault.com/questions/202468/changing-the-shell-using-chsh-via-the-command-line-in-a-script" $CHSH_FILE
@@ -23,14 +28,13 @@ zsh_setup() {
 	sudo groupadd -f chsh
 	sudo usermod -aG chsh $USER
 	chsh -s $(which zsh) $USER
-
 }
 
 zsh_dotfiles() {
+	echo "Setting up zsh dotfiles"
 	sudo ln -s /srv/dotfiles/zsh/zshenv ~/.zshenv 2> /dev/null
 	mkdir -p ~/.config/zsh
 	sudo ln -s /srv/dotfiles/zsh/zshrc ~/.config/zsh/.zshrc 2> /dev/null
-	exit 1
 }
 
 [ ! -n "$1" ] && cli_help
@@ -45,6 +49,12 @@ case "$1" in
   dotfiles)
 	zsh_dotfiles
 	;;
+  all)
+  	zsh_install
+  	zsh_setup
+  	zsh_dotfiles
+  	echo "All done"
+  	;;
   *)
     cli_help
     ;;

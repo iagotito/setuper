@@ -5,22 +5,25 @@ set -e
 PACKAGES='git curl build-essential vim zsh tmux snapd libssl-dev libpam-gnome-keyring xclip exa'
 SNAPPACKAGES='insomnia' #'discord insomnia gimp obs-studio'
 NODEPACKAGES='tldr'
-PROGRAMS='asdf neovim docker dropbox'
+PROGRAMS='asdf docker'
 
 ASDF_DIR='/srv/asdf'
 ASDF_SCRIPT="$ASDF_DIR/asdf.sh"
 
 cli_help() {
   echo "
-Command: system [appearance | programs | full-setup]
+Command: system [appearance | programs | all]
 Usage:
-  TODO"
+  appearance -> setup icons and theme
+  list       -> list programs to be installed by the 'programs' command
+  programs   -> donwload and setup programs
+  all        -> run all commands above"
   exit 1
 }
 
 icon_theme_setup() {
   if [[ -z $(ls /usr/share/icons | grep "candy-icons") ]]; then
-    curl -L 'https://github.com/EliverLara/candy-icons/archive/refs/heads/master.zip' -o /tmp/candy-icons.zip
+  wget 'https://github.com/EliverLara/candy-icons/archive/refs/heads/master.zip' -O /tmp/candy-icons.zip
     sudo unzip /tmp/candy-icons.zip -d /usr/share/icons/
   fi
   gsettings set org.gnome.desktop.interface icon-theme candy-icons-master
@@ -28,7 +31,7 @@ icon_theme_setup() {
 
 system_theme_setup() {
   if [[ -z $(ls /usr/share/themes | grep -i "sweet") ]]; then
-    curl -L 'https://github.com/EliverLara/Sweet/releases/download/v3.0/Sweet-Dark-v40.zip' -o /tmp/sweet-theme.zip
+  wget 'https://github.com/EliverLara/Sweet/releases/download/v3.0/Sweet-Dark-v40.zip' -O /tmp/sweet-theme.zip
     sudo unzip /tmp/sweet-theme.zip -d /usr/share/themes/
   fi
 	gsettings set org.gnome.desktop.interface gtk-theme 'Sweet-Dark-v40'
@@ -39,7 +42,7 @@ system_theme_setup() {
 fonts_download() {
   if [[ -z $(ls /usr/share/fonts/ttf | grep -i "hack") ]]; then
     sudo mkdir -p /usr/share/fonts/ttf
-    curl -L https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip -o /tmp/hack-font.zip
+  wget 'https://github.com/source-foundry/Hack/releases/download/v3.003/Hack-v3.003-ttf.zip' -O /tmp/hack-font.zip
     sudo unzip /tmp/hack-font.zip -d /tmp/hack-font/
     sudo cp -t /usr/share/fonts/ttf/ /tmp/hack-font/ttf/*
   fi
@@ -130,7 +133,7 @@ docker_install() {
 }
 
 tmux_setup() {
-  ln -s -T /srv/dotfiles/tmux/tmux.conf .tmux.conf
+  ln -s -T /srv/dotfiles/tmux/tmux.conf ~/.tmux.conf
 }
 
 setup_programs() {
@@ -144,6 +147,17 @@ setup_programs() {
   #neovim_install
 }
 
+list_programs() {
+  echo "APT packages to be installed:"
+  echo $PACKAGES
+  echo
+  echo "Snap packages to be installed:"
+  echo $SNAPPACKAGES
+  echo
+  echo "Other programs:"
+  echo $PROGRAMS
+}
+
 [ ! -n "$1" ] && cli_help
 
 case "$1" in
@@ -153,7 +167,10 @@ case "$1" in
   programs)
     setup_programs
     ;;
-  full-setup)
+  list)
+    list_programs
+    ;;
+  all)
     setup_apprearance
     setup_programs
     ;;

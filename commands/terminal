@@ -20,24 +20,24 @@ GRAY="#2E3436"
 BLUE="#5D7BE6"
 # Changes default terminal color palette
 # black, red, green, yellow, blue, purple, cyan, white
-PALETTE="['$GRAY', '$RED', '$GREEN', '$YELLOW', '$BLUE', '$PURPLE', '$CYAN', '$WHITE', 'rgb(76,76,76)', 'rgb(255,0,0)', 'rgb(0,255,0)', 'rgb(255,255,0)', 'rgb(70,130,180)', 'rgb(255,0,255)', 'rgb(0,255,255)', 'rgb(255,255,255)']"
+PALETTE="[$GRAY, $RED, $GREEN, $YELLOW, $BLUE, $PURPLE, $CYAN, $WHITE, 'rgb(76,76,76)', 'rgb(255,0,0)', 'rgb(0,255,0)', 'rgb(255,255,0)', 'rgb(70,130,180)', 'rgb(255,0,255)', 'rgb(0,255,255)', 'rgb(255,255,255)']"
 DEFAULT_SYSTEM_PALETTE="['#171421', '#c01c28', '#26a269', '#a2734c', '#12488b', '#a347ba', '#2aa1b3', '#d0cfcc', '#5e5c64', '#f66151', '#33da7a', '#e9ad0c', '#2a7bde', '#c061cb', '#33c7de', '#ffffff']"
 
 cli_help() {
   echo "
+Setup terminal fonts and colors
 Command: terminal [setup]
 Usage:
-  TODO"
-  exit 1
+  setuper terminal setup -> donwload fonts and setup fonts and colors"
 }
 
 # Donwload FiraCode font
 fonts_donwload() {
-  if [[ -z $(ls /usr/share/fonts/ttf | grep -i "firacode") ]]; then
-    sudo mkdir -p /usr/share/fonts/ttf
-    curl -L https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip -o /tmp/firacode.zip
+  if [[ -z $(ls /usr/share/fonts | grep -i "firacode") ]]; then
+    sudo mkdir -p /usr/share/fonts
+    wget --output-document=/tmp/firacode.zip https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip
     sudo unzip /tmp/firacode.zip -d /tmp/firacode/
-    sudo cp -t /usr/share/fonts/ttf/ /tmp/firacode/ttf/*
+    sudo cp -t /usr/share/fonts/ /tmp/firacode/ttf/*
   fi
 }
 
@@ -49,6 +49,7 @@ terminal_setup() {
 	PROFILE_ID=$(echo "$DEFAULT_PROFILE" | cut -d "'" -f 2)
 	gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE_ID/ use-theme-colors false
   gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE_ID/ palette $PALETTE 2> /dev/null || true
+  gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE_ID/ foreground-color $WHITE 2> /dev/null || true
   gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE_ID/ background-color "'$BACKGROUND'"
 	gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE_ID/ use-system-font false
 	gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:$PROFILE_ID/ font 'Fira Code Medium 14'

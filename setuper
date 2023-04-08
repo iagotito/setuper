@@ -19,7 +19,6 @@ Usage: $cli_name [command]
 Commands:
   test
   zsh
-  tmux
   neovim
   terminal
   system
@@ -35,10 +34,6 @@ case "$1" in
   zsh)
     $CLI_WORKDIR/commands/zsh ${@:2}
     ;;
-  tmux)
-    $CLI_WORKDIR/commands/tmux ${@:2}
-    #sudo ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf 2> /dev/null;;
-    ;;
   neovim)
     $CLI_WORKDIR/commands/neovim ${@:2}
     ;;
@@ -48,6 +43,11 @@ case "$1" in
   system)
     $CLI_WORKDIR/commands/system ${@:2}
     ;;
+  all)
+    $CLI_WORKDIR/commands/system all
+    $CLI_WORKDIR/commands/terminal all
+    $CLI_WORKDIR/commands/neovim all
+    $CLI_WORKDIR/commands/zsh all
   *)
     cli_help
     ;;
