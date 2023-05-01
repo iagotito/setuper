@@ -28,14 +28,16 @@ neovim_install() {
 	sudo wget --quiet --output-document=$NEOVIM_DIR/nvim.appimage https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
 	sudo chmod 755 $NEOVIM_DIR
 	sudo chmod +x $NEOVIM_DIR/nvim.appimage
-	sudo ln -s -T $NEOVIM_DIR/nvim.appimage /usr/bin/nvim
+	sudo ln -s -T $NEOVIM_DIR/nvim.appimage /usr/bin/nvim || true
 	echo "Neovim installed"
 }
 
 neovim_dotfiles() {
 	echo "Setting up neovim dotfiles"
 	# dotfiles
-	ln -s -T /srv/dotfiles/nvim $XDG_CONFIG_HOME/nvim
+	export XDG_CONFIG_HOME=$HOME/.config
+	export XDG_DATA_HOME=$XDG_CONFIG_HOME/local/share
+	ln -s -T /srv/dotfiles/nvim $XDG_CONFIG_HOME/nvim || true
 
 	# plugins manager
 	if [[ -z "$XDG_DATA_HOME" ]]; then

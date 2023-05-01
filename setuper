@@ -17,9 +17,9 @@ Enviroment Setuper (theme, terminal, dotfiles etc)
 Version: $(cat $CLI_WORKDIR/VERSION)
 Usage: $cli_name [command]
 Commands:
-  test
   zsh
   neovim
+  asdf
   terminal
   system
   *         Help
@@ -37,6 +37,9 @@ case "$1" in
   neovim)
     $CLI_WORKDIR/commands/neovim ${@:2}
     ;;
+  asdf)
+    $CLI_WORKDIR/commands/asdf ${@:2}
+    ;;
   terminal)
     $CLI_WORKDIR/commands/terminal ${@:2}
     ;;
@@ -46,8 +49,10 @@ case "$1" in
   all)
     $CLI_WORKDIR/commands/system all
     $CLI_WORKDIR/commands/terminal all
+    $CLI_WORKDIR/commands/asdf all
     $CLI_WORKDIR/commands/neovim all
     $CLI_WORKDIR/commands/zsh all
+    ;;
   *)
     cli_help
     ;;

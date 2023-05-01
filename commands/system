@@ -4,17 +4,14 @@ set -e
 
 PACKAGES='git curl build-essential vim zsh tmux snapd libssl-dev libpam-gnome-keyring xclip exa'
 SNAPPACKAGES='insomnia' #'discord insomnia gimp obs-studio'
-NODEPACKAGES='tldr'
-PROGRAMS='asdf docker'
-
-ASDF_DIR='/srv/asdf'
-ASDF_SCRIPT="$ASDF_DIR/asdf.sh"
+PROGRAMS='docker'
 
 cli_help() {
   echo "
 Command: system [appearance | programs | all]
 Usage:
   appearance -> setup icons and theme
+  browser    -> install browser (Microsoft Edge)
   list       -> list programs to be installed by the 'programs' command
   programs   -> donwload and setup programs
   all        -> run all commands above"
@@ -46,6 +43,15 @@ fonts_download() {
     sudo unzip /tmp/hack-font.zip -d /tmp/hack-font/
     sudo cp -t /usr/share/fonts/ttf/ /tmp/hack-font/ttf/*
   fi
+
+  if [[ -z $(ls /usr/share/fonts | grep -i "firacode") ]]; then
+    sudo mkdir -p /usr/share/fonts
+    wget --output-document=/tmp/firacode.zip https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip
+    sudo unzip /tmp/firacode.zip -d /tmp/firacode/
+    sudo cp -t /usr/share/fonts/ /tmp/firacode/ttf/*
+  fi
+
+  fc-cache -f -v
 }
 
 fonts_setup() {
@@ -67,54 +73,15 @@ setup_apprearance() {
   dock_setup
 }
 
-asdf_install() {
-  echo "Installing asdf"
-  ASDF_GITHUB_REPO='https://github.com/asdf-vm/asdf.git'
-  ASDF_LATEST_VERSION=$(git -c 'cersionsort.suffix=-' ls-remote --tags --refs --sort="v:refname" $ASDF_GITHUB_REPO | sed -E 's/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/g' | tail -n 1)
-  sudo mkdir -p $ASDF_DIR
-  sudo chown $USER:$USER $ASDF_DIR
-	git clone $ASDF_GITHUB_REPO $ASDF_DIR --branch $ASDF_LATEST_VERSION
-  echo "asdf installed"
-}
+install_browser() {
+  BROWSER="Microsoft Edge"
 
-asdf_install_python() {
-  source $ASDF_SCRIPT
-  sudo apt install -y libffi-dev libncurses5-dev zlib1g zlib1g-dev libssl-dev libreadline-dev libbz2-dev libsqlite3-dev liblzma-dev
-  #sudo apt install -y libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+  wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+  sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+  sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
+  sudo rm microsoft.gpg
 
-  asdf plugin-add python || true
-  PYTHON_VERSION=$(asdf list all python | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
-  asdf install python $PYTHON_VERSION
-  asdf global python $PYTHON_VERSION
-}
-
-asdf_install_node() {
-	asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
-	NODE_VERSION=$(asdf list all nodejs | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
-	asdf install nodejs $NODE_VERSION
-	asdf global nodejs $NODE_VERSION
-
-  setup_node_packages
-}
-
-setup_node_packages() {
-  npm install -g $NODEPACKAGES
-}
-
-asdf_install_golang() {
-  asdf plugin-add golang https://github.com/kennyp/asdf-golang.git || true
-	GOLANG_VERSION=$(asdf list all golang | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
-	asdf install golang $GOLANG_VERSION
-	asdf global golang $GOLANG_VERSION
-
-  go install golang.org/x/tools/gopls@latest
-}
-
-asdf_setup() {
-  asdf_install
-  asdf_install_python
-  asdf_install_node
-  asdf_install_golang
+  sudo apt update && sudo apt install microsoft-edge-stable
 }
 
 docker_install() {
@@ -133,18 +100,16 @@ docker_install() {
 }
 
 tmux_setup() {
-  ln -s -T /srv/dotfiles/tmux/tmux.conf ~/.tmux.conf
+  ln -s -T /srv/dotfiles/tmux/tmux.conf ~/.tmux.conf || true
 }
 
 setup_programs() {
   sudo apt install -y $PACKAGES
   sudo snap install $SNAPPACKAGES
 
-  asdf_setup
   docker_install
 
   tmux_setup
-  #neovim_install
 }
 
 list_programs() {
@@ -164,6 +129,9 @@ case "$1" in
   appearance)
     setup_apprearance
     ;;
+  browser)
+    install_browser
+    ;;
   programs)
     setup_programs
     ;;
@@ -172,6 +140,7 @@ case "$1" in
     ;;
   all)
     setup_apprearance
+    install_browser
     setup_programs
     ;;
   *)

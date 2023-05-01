@@ -38,6 +38,7 @@ fonts_donwload() {
     wget --output-document=/tmp/firacode.zip https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip
     sudo unzip /tmp/firacode.zip -d /tmp/firacode/
     sudo cp -t /usr/share/fonts/ /tmp/firacode/ttf/*
+    fc-cache -f -v
   fi
 }
 
@@ -59,6 +60,9 @@ terminal_setup() {
 
 case "$1" in
   setup)
+    terminal_setup
+    ;;
+  all)
     terminal_setup
     ;;
   *)
