@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+
+ASDF_DIR='/opt/asdf'
+ASDF_DATA_DIR=$ASDF_DIR
+ASDF_SCRIPT="$ASDF_DIR/asdf.sh"
+LANGAUGES="python nodejs golang"
+
+cli_help() {
+  echo "
+Command: asdf [install | list | languages | all]
+Usage:
+  install    -> install asdf
+  list       -> list programming languages that will be installed
+  languages  -> install the programming languages
+  all        -> run all commands above"
+  exit 1
+}
+
+asdf_install() {
+  echo "Installing asdf"
+  ASDF_GITHUB_REPO='https://github.com/asdf-vm/asdf.git'
+  ASDF_LATEST_VERSION=$(git -c 'cersionsort.suffix=-' ls-remote --tags --refs --sort="v:refname" $ASDF_GITHUB_REPO | sed -E 's/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/g' | tail -n 1)
+  sudo mkdir -p $ASDF_DIR
+  sudo chown $USER:$USER $ASDF_DIR
+	git clone $ASDF_GITHUB_REPO $ASDF_DIR --branch $ASDF_LATEST_VERSION
+  echo "asdf installed"
+}
+
+asdf_install_python() {
+  export ASDF_DATA_DIR=$ASDF_DATA_DIR
+  source $ASDF_SCRIPT
+
+  sudo apt install -y libffi-dev libncurses5-dev zlib1g zlib1g-dev libssl-dev libreadline-dev libbz2-dev libsqlite3-dev liblzma-dev
+
+  asdf plugin-add python || true
+  PYTHON_VERSION=$(asdf list all python | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
+  asdf install python $PYTHON_VERSION
+  asdf global python $PYTHON_VERSION
+}
+
+asdf_install_node() {
+  export ASDF_DATA_DIR=$ASDF_DATA_DIR
+  source $ASDF_SCRIPT
+
+	asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git || true
+	NODE_VERSION=$(asdf list all nodejs | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
+	asdf install nodejs $NODE_VERSION
+	asdf global nodejs $NODE_VERSION
+
+  setup_node_packages
+}
+
+asdf_install_golang() {
+  export ASDF_DATA_DIR=$ASDF_DATA_DIR
+  source $ASDF_SCRIPT
+
+  asdf plugin-add golang https://github.com/kennyp/asdf-golang.git || true
+	GOLANG_VERSION=$(asdf list all golang | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
+	asdf install golang $GOLANG_VERSION
+	asdf global golang $GOLANG_VERSION
+
+  go install golang.org/x/tools/gopls@latest
+}
+
+asdf_list() {
+  echo $LANGAUGES
+}
+
+asdf_install_languages() {
+  asdf_install_python
+  asdf_install_node
+  asdf_install_golang
+}
+
+[ ! -n "$1" ] && cli_help
+
+case "$1" in
+  install)
+    asdf_install
+    ;;
+  list)
+    asdf_list_languages
+    ;;
+  languages)
+    asdf_install_languages
+    ;;
+  all)
+    asdf_install
+    asdf_list
+    asdf_install_languages
+    ;;
+  *)
+    cli_help
+    ;;
+esac
