@@ -38,6 +38,16 @@ asdf_install_python() {
   asdf global python $PYTHON_VERSION
 }
 
+asdf_install_rust() {
+  export ASDF_DATA_DIR=$ASDF_DATA_DIR
+  source $ASDF_SCRIPT
+
+  asdf plugin-add rust https://github.com/code-lever/asdf-rust.git || true
+  RUST_VERSION=$(asdf list all rust | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
+  asdf install rust $RUST_VERSION
+ }
+ asdf global rust $RUST_VERSION
+
 asdf_install_node() {
   export ASDF_DATA_DIR=$ASDF_DATA_DIR
   source $ASDF_SCRIPT
@@ -70,6 +80,7 @@ asdf_install_languages() {
   asdf_install_python
   asdf_install_node
   asdf_install_golang
+  asdf_install_rust
 }
 
 [ ! -n "$1" ] && cli_help
