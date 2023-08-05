@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+set -e
+
+cli_help() {
+  echo "
+Command: i3 [install | dotfiles]
+Usage:
+  setuper i3 install  -> install i3wm
+  setuper i3 setup    -> set i3 as default window manager
+  setuper i3 lightdm  -> set lightdm as login screen
+  setuper i3 dotfiles -> create symlinks to i3 dotfiles
+  setuper i3 all      -> run all commands above"
+
+  exit 1
+}
+
+i3_install() {
+	echo "Installing i3"
+	sudo apt install -y i3 i3lock
+  echo "Installing dependencies for i3status-rust"
+  suto apt install -y libssl-dev libsensors-dev libpulse-dev libnotmuch-dev
+  echo "Installing i3status-rust"
+  sudo apt-get install -y libsensors4-dev pandoc
+  git clone https://github.com/greshake/i3status-rust
+  cd i3status-rust
+  cargo install --path . --locked
+  ./install.sh
+  echo "i3 and i3status-rust installed"
+}
+
+lightdm_install_and_setup() {
+	echo "Installing lightdm"
+	sudo apt install -y lightdm
+  echo "Configuring lightdm"
+  sudo systemctl disable gdm
+  sudo systemctl enable lightdm
+}
+
+#zsh_setup() {
+	#echo "Setting up zsh as default shell"
+	#CHSH_FILE="/etc/pam.d/chsh"
+	#sudo sed -i "1 i\# This allows users of group chsh to change their shells without a password." $CHSH_FILE
+	#sudo sed -i "2 i\# Per: http://serverfault.com/questions/202468/changing-the-shell-using-chsh-via-the-command-line-in-a-script" $CHSH_FILE
+	#sudo sed -i "3 i\auth       sufficient   pam_wheel.so trust group=chsh" $CHSH_FILE
+	#sudo groupadd -f chsh
+	#sudo usermod -aG chsh $USER
+	#chsh -s $(which zsh) $USER
+#}
+
+#zsh_dotfiles() {
+	#echo "Setting up zsh dotfiles"
+	#sudo ln -s /srv/dotfiles/zsh/zshenv ~/.zshenv 2> /dev/null
+	#mkdir -p ~/.config/zsh
+	#sudo ln -s /srv/dotfiles/zsh/zshrc ~/.config/zsh/.zshrc 2> /dev/null
+#}
+
+[ ! -n "$1" ] && cli_help
+
+case "$1" in
+  install)
+	  i3_install
+    ;;
+  lightdm)
+    lightdm_install_and_setup
+    ;;
+  setup)
+    zsh_setup
+    ;;
+  dotfiles)
+    zsh_dotfiles
+    ;;
+  all)
+  	zsh_install
+  	zsh_setup
+  	zsh_dotfiles
+  	echo "All done"
+    ;;
+  *)
+    cli_help
+    ;;
+esac
+

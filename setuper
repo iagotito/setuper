@@ -19,6 +19,7 @@ Usage: $cli_name [command]
 Commands:
   zsh
   neovim
+  i3
   asdf
   terminal
   system
@@ -28,14 +29,14 @@ Commands:
 }
 
 case "$1" in
-  test|t)
-    $CLI_WORKDIR/commands/test ${@:2}
-    ;;
   zsh)
     $CLI_WORKDIR/commands/zsh ${@:2}
     ;;
   neovim)
     $CLI_WORKDIR/commands/neovim ${@:2}
+    ;;
+  i3)
+    $CLI_WORKDIR/commands/i3 ${@:2}
     ;;
   asdf)
     $CLI_WORKDIR/commands/asdf ${@:2}
@@ -52,6 +53,7 @@ case "$1" in
     $CLI_WORKDIR/commands/asdf all
     $CLI_WORKDIR/commands/neovim all
     $CLI_WORKDIR/commands/zsh all
+    $CLI_WORKDIR/commands/i3 all
     ;;
   *)
     cli_help
