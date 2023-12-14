@@ -51,6 +51,13 @@ fonts_download() {
     sudo cp -t /usr/share/fonts/ /tmp/firacode/ttf/*
   fi
 
+  if [[ -z $(ls /usr/share/fonts | grep -i "nerdfontssymbolsonly") ]]; then
+    sudo mkdir -p /usr/share/fonts
+    wget --output-document=/tmp/NerdFontsSymbolsOnly.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/NerdFontsSymbolsOnly.zip
+    sudo unzip /tmp/NerdFontsSymbolsOnly.zip -d /tmp/NerdFontsSymbolsOnly
+    sudo cp -t /usr/share/fonts/ /tmp/NerdFontsSymbolsOnly/SymbolsNerdFontMono-Regular.ttf /tmp/NerdFontsSymbolsOnly/SymbolsNerdFont-Regular.ttf
+  fi
+
   fc-cache -f -v
 }
 
@@ -134,6 +141,12 @@ case "$1" in
     ;;
   programs)
     setup_programs
+    ;;
+  docker)
+    docker_install
+    ;;
+  tmux)
+    tmux_setup
     ;;
   list)
     list_programs
