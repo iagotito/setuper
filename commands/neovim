@@ -37,7 +37,7 @@ neovim_dotfiles() {
 	# dotfiles
 	export XDG_CONFIG_HOME=$HOME/.config
 	export XDG_DATA_HOME=$XDG_CONFIG_HOME/local/share
-	ln -s -T /srv/dotfiles/nvim $XDG_CONFIG_HOME/nvim || true
+	ln -s -T $HOME/.dotfiles/nvim $XDG_CONFIG_HOME/nvim || true
 
 	# plugins manager
 	if [[ -z "$XDG_DATA_HOME" ]]; then

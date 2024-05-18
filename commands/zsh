@@ -32,9 +32,9 @@ zsh_setup() {
 
 zsh_dotfiles() {
 	echo "Setting up zsh dotfiles"
-	sudo ln -s /srv/dotfiles/zsh/zshenv ~/.zshenv 2> /dev/null
+	sudo ln -s $HOME/.dotfiles/zsh/zshenv ~/.zshenv 2> /dev/null
 	mkdir -p ~/.config/zsh
-	sudo ln -s /srv/dotfiles/zsh/zshrc ~/.config/zsh/.zshrc 2> /dev/null
+	sudo ln -s $HOME/.dotfiles/zsh/zshrc ~/.config/zsh/.zshrc 2> /dev/null
 }
 
 [ ! -n "$1" ] && cli_help

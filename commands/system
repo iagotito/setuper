@@ -107,7 +107,7 @@ docker_install() {
 }
 
 tmux_setup() {
-  ln -s -T /srv/dotfiles/tmux/tmux.conf ~/.tmux.conf || true
+  ln -s -T $HOME/.dotfiles/tmux/tmux.conf $HOME/.tmux.conf || true
 }
 
 setup_programs() {
