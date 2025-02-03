@@ -2,60 +2,102 @@
 
 set -e
 
-# follow link
-CLI_PATH=$0
-if [[ -n $(readlink $CLI_PATH) ]]; then
-  CLI_PATH=$(readlink $CLI_PATH)
+# Check if dialog is installed
+if ! command -v dialog &>/dev/null; then
+  echo "dialog is not installed. Do you want to install it now? (y/n)"
+  read -r choice
+  if [[ "$choice" =~ ^[Yy]$ ]]; then
+    sudo apt update && sudo apt install -y dialog
+  else
+    echo "dialog is required to run this script. Exiting."
+    exit 1
+  fi
 fi
-CLI_WORKDIR=$(dirname $CLI_PATH)
 
-cli_help() {
-  cli_name=$(basename $CLI_PATH)
-  echo "
-$cli_name
-Enviroment Setuper (theme, terminal, dotfiles etc)
-Version: $(cat $CLI_WORKDIR/VERSION)
-Usage: $cli_name [command]
-Commands:
-  zsh
-  neovim
-  i3
-  asdf
-  terminal
-  system
-  *         Help
-"
-  exit 1
+# Follow symlink
+CLI_PATH=$0
+if [[ -n $(readlink "$CLI_PATH") ]]; then
+  CLI_PATH=$(readlink "$CLI_PATH")
+fi
+CLI_WORKDIR=$(dirname "$CLI_PATH")
+
+# Store user selections
+declare -A selections
+
+# Function to show dialog and store selections
+show_checklist() {
+  local category=$1
+  shift
+  local options=("$@")
+
+  selected=$(dialog --keep-tite --stdout --separate-output --checklist "Select options for $category:" 20 50 ${#options[@]} "${options[@]}")
+
+  if [[ -n "$selected" ]]; then
+    for opt in $selected; do
+      selections["$category"]+="$opt "
+    done
+  fi
 }
 
-case "$1" in
-  zsh)
-    $CLI_WORKDIR/commands/zsh ${@:2}
-    ;;
-  neovim)
-    $CLI_WORKDIR/commands/neovim ${@:2}
-    ;;
-  i3)
-    $CLI_WORKDIR/commands/i3 ${@:2}
-    ;;
-  asdf)
-    $CLI_WORKDIR/commands/asdf ${@:2}
-    ;;
-  terminal)
-    $CLI_WORKDIR/commands/terminal ${@:2}
-    ;;
-  system)
-    $CLI_WORKDIR/commands/system ${@:2}
-    ;;
-  all)
-    $CLI_WORKDIR/commands/system all
-    $CLI_WORKDIR/commands/terminal all
-    $CLI_WORKDIR/commands/asdf all
-    $CLI_WORKDIR/commands/neovim all
-    $CLI_WORKDIR/commands/zsh all
-    $CLI_WORKDIR/commands/i3 all
-    ;;
-  *)
-    cli_help
-    ;;
-esac
+# Show welcome screen
+dialog --keep-tite --msgbox "Welcome to Setuper! Select what you want to do in the next pages." 10 50
+
+# Show checklists
+show_checklist "system" \
+  "font" "Download and configure Hack font" off \
+  "theme" "Setup icons and theme" off \
+  "dock" "Setup dock" off
+
+show_checklist "programs" \
+  "packages" "Install basic apt packages" off \
+  "docker" "Download and setup Docker" off
+
+show_checklist "terminal" \
+  "setup" "Download fonts and setup colors" off
+
+show_checklist "asdf" \
+  "install" "Install ASDF" off \
+  "python" "Install Python" off \
+  "node" "Install Node.js" off \
+  "go" "Install Go" off \
+  "rust" "Install Rust" off \
+  "languages" "Install all programming languages" off
+
+show_checklist "neovim" \
+  "install" "Install latest Neovim version" off \
+  "dotfiles" "Setup dotfiles and install plugins" off
+
+show_checklist "zsh" \
+  "install" "Install Zsh" off \
+  "setup" "Set Zsh as default shell" off \
+  "dotfiles" "Create symlinks to Zsh dotfiles" off
+
+show_checklist "tmux" \
+  "install" "Install tmux" off \
+  "dotfiles" "Create symlinks to tmux dotfiles" off
+
+# I want to execute the commands with this "priority order"
+ordered_categories=("system" "programs" "terminal" "asdf" "neovim" "zsh")
+
+selected_options=""
+for category in "${ordered_categories[@]}"; do
+  selected_options="$selected_options$category:\n"
+  for option in ${selections[$category]}; do
+    selected_options="$selected_options  $option\n"
+  done
+  selected_options="$selected_options\n"
+done
+
+# Confirmation window
+if ! dialog --keep-tite --yesno "You selected the following options:\n\n$selected_options\nDo you want to proceed?" 25 50; then
+  echo "Exiting the program"
+  exit 0
+fi
+
+# Execute selected commands
+for category in "${ordered_categories[@]}"; do
+  for option in ${selections[$category]}; do
+    #echo "Running: $CLI_WORKDIR/commands/$category $option"
+    $CLI_WORKDIR/commands/"$category" "$option"
+  done
+done

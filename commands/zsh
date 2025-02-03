@@ -6,10 +6,10 @@ cli_help() {
   echo "
 Command: zsh [install | dotfiles]
 Usage:
-  setuper zsh install  -> install zsh
-  setuper zsh setup    -> set zsh as default shell to user
-  setuper zsh dotfiles -> create symlinks to zsh dotfiles
-  setuper zsh all      -> run all commands above"
+  install  -> install zsh
+  setup    -> set zsh as default shell to user
+  dotfiles -> create symlinks to zsh dotfiles
+  all      -> run all commands above"
 
   exit 1
 }
@@ -59,4 +59,3 @@ case "$1" in
     cli_help
     ;;
 esac
-

@@ -1,19 +1,13 @@
 #!/usr/bin/env bash
 
-set -e
-
-PACKAGES='git curl build-essential vim zsh tmux snapd libssl-dev libpam-gnome-keyring xclip exa'
-SNAPPACKAGES='insomnia' #'discord insomnia gimp obs-studio'
-PROGRAMS='docker'
 
 cli_help() {
   echo "
-Command: system [appearance | programs | all]
+Command: system [font | theme | dock | all]
 Usage:
-  appearance -> setup icons and theme
-  browser    -> install browser (Microsoft Edge)
-  list       -> list programs to be installed by the 'programs' command
-  programs   -> donwload and setup programs
+  font       -> download and configure Hack font
+  theme      -> setup icons and theme
+  dock       -> setup dock
   all        -> run all commands above"
   exit 1
 }
@@ -80,81 +74,24 @@ setup_apprearance() {
   dock_setup
 }
 
-install_browser() {
-  BROWSER="Microsoft Edge"
-
-  wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-  sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-  sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
-  sudo rm microsoft.gpg
-
-  sudo apt update && sudo apt install microsoft-edge-stable
-}
-
-docker_install() {
-	echo "Installing docker"
-	sudo apt install -y ca-certificates curl gnupg lsb-release
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/docker-archive-keyring.gpg
-	echo \
-	  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-	  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	sudo apt update
-	sudo apt install -y docker-ce docker-ce-cli containerd.io
-	sudo groupadd -f docker
-	sudo usermod -aG docker $USER
-  echo "Docker installed"
-
-}
-
-tmux_setup() {
-  ln -s -T $HOME/.dotfiles/tmux/tmux.conf $HOME/.tmux.conf || true
-}
-
-setup_programs() {
-  sudo apt install -y $PACKAGES
-  sudo snap install $SNAPPACKAGES
-
-  docker_install
-
-  tmux_setup
-}
-
-list_programs() {
-  echo "APT packages to be installed:"
-  echo $PACKAGES
-  echo
-  echo "Snap packages to be installed:"
-  echo $SNAPPACKAGES
-  echo
-  echo "Other programs:"
-  echo $PROGRAMS
-}
-
 [ ! -n "$1" ] && cli_help
 
 case "$1" in
-  appearance)
-    setup_apprearance
+  font)
+    fonts_setup
     ;;
-  browser)
-    install_browser
+  theme)
+    icon_theme_setup
+    system_theme_setup
     ;;
-  programs)
-    setup_programs
-    ;;
-  docker)
-    docker_install
-    ;;
-  tmux)
-    tmux_setup
-    ;;
-  list)
-    list_programs
+  dock)
+    dock_setup
     ;;
   all)
-    setup_apprearance
-    install_browser
-    setup_programs
+    fonts_setup
+    icon_theme_setup
+    system_theme_setup
+    dock_setup
     ;;
   *)
     cli_help

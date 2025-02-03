@@ -7,11 +7,15 @@ LANGAUGES="python nodejs golang"
 
 cli_help() {
   echo "
-Command: asdf [install | list | languages | all]
+Command: asdf [install | list | languages | python | node | go | rust | all]
 Usage:
   install    -> install asdf
   list       -> list programming languages that will be installed
   languages  -> install the programming languages
+  python     -> install python
+  node       -> install node
+  go         -> install go
+  rust       -> install rust
   all        -> run all commands above"
   exit 1
 }
@@ -30,7 +34,7 @@ asdf_install_python() {
   export ASDF_DATA_DIR=$ASDF_DATA_DIR
   source $ASDF_SCRIPT
 
-  sudo apt install -y libffi-dev libncurses5-dev zlib1g zlib1g-dev libssl-dev libreadline-dev libbz2-dev libsqlite3-dev liblzma-dev
+  sudo apt install -y libpq-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libssl-dev libreadline-dev libbz2-dev libsqlite3-dev liblzma-dev
 
   asdf plugin-add python || true
   PYTHON_VERSION=$(asdf list all python | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+" | grep -v "[a-zA-Z]" | tail -n 1)
@@ -94,6 +98,18 @@ case "$1" in
     ;;
   languages)
     asdf_install_languages
+    ;;
+  python)
+    asdf_install_python
+    ;;
+  rust)
+    asdf_install_rust
+    ;;
+  go)
+    asdf_install_golang
+    ;;
+  node)
+    asdf_install_node
     ;;
   all)
     asdf_install
