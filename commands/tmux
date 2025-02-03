@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -e
+
+cli_help() {
+  echo "
+Command: tmuc [install | dotfiles | all]
+Usage:
+  install  -> install tmux
+  dotfiles -> create symlinks to tmux dotfiles
+  all      -> run all commands above"
+
+  exit 1
+}
+
+tmux_install() {
+	echo "Installing tmux"
+	sudo apt install -y tmux
+}
+
+tmux_dotfiles() {
+	echo "Setting up tmux dotfiles"
+	sudo ln -s $HOME/.dotfiles/tmux/tmux.conf ~/.tmux.conf 2> /dev/null
+}
+
+[ ! -n "$1" ] && cli_help
+
+case "$1" in
+  install)
+	  tmux_install
+    ;;
+  dotfiles)
+    tmux_dotfiles
+	;;
+  all)
+  	tmux_install
+  	tmux_dotfiles
+  	;;
+  *)
+    cli_help
+    ;;
+esac

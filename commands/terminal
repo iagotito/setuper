@@ -28,7 +28,7 @@ cli_help() {
 Setup terminal fonts and colors
 Command: terminal [setup]
 Usage:
-  setuper terminal setup -> donwload fonts and setup fonts and colors"
+  setup -> donwload fonts and setup fonts and colors"
 }
 
 # Donwload FiraCode font

@@ -12,23 +12,6 @@ Bash](https://medium.com/@brotandgames/build-a-custom-cli-with-bash-e3ce60cfb9a4
 
 ## How to use
 
-To install and configure dotfiles for everything (zsh, tmux, themes etc) run:
-
-```shell
-./setuper zsh all
-./setuper neovim all
-./setuper terminal all
-./setuper system all
-
-# or
-
-./setuper all
-```
-
-To read what action do, check the docs:
-
-```
-./setuper help
-
-./setuper [option] help
-```
+Just run the `setuper` file and select what you want to do. You will
+need to have the `dialog` pakage installed, but the program will ask
+you to install if you don't have it.

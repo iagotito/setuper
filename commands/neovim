@@ -8,9 +8,9 @@ cli_help() {
   echo "
 Command: neovim [install | dotfiles]
 Usage:
-  setuper neovim install  -> install latest neovim version
-  setuper neovim dotfiles -> setup dotfiles and install plugins
-  setuper neovim all      -> run all commands above"
+  install  -> install latest neovim version
+  dotfiles -> setup dotfiles and install plugins
+  all      -> run all commands above"
 }
 
 # required library to open appimages
@@ -44,14 +44,14 @@ neovim_dotfiles() {
 		echo "XDG_DATA_HOME not configured"
 		exit 1
 	fi
-	
+
 	echo "Installing neovim plugin manager"
 	mkdir -p ~/.config
 	sudo ln -s ~/.dotfiles/nvim/ ~/.config/nvim 2> /dev/null
 	git clone --depth=1 https://github.com/savq/paq-nvim.git \
 	 $XDG_DATA_HOME/nvim/site/pack/paqs/start/paq-nvim || true
 	echo "Installing neovim plugins"
-	nvim --headless +PaqInstall +q	
+	nvim --headless +PaqInstall +q
 }
 
 [ ! -n "$1" ] && cli_help
@@ -61,8 +61,8 @@ case "$1" in
 	  neovim_install
     ;;
   dotfiles)
-	neovim_dotfiles
-	;;
+    neovim_dotfiles
+    ;;
   all)
   	neovim_install
   	neovim_dotfiles
