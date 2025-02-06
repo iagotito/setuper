@@ -77,7 +77,7 @@ show_checklist "tmux" \
   "dotfiles" "Create symlinks to tmux dotfiles" off
 
 # I want to execute the commands with this "priority order"
-ordered_categories=("system" "programs" "terminal" "asdf" "neovim" "zsh")
+ordered_categories=("system" "programs" "terminal" "asdf" "neovim" "zsh" "tmux")
 
 selected_options=""
 for category in "${ordered_categories[@]}"; do
@@ -97,7 +97,10 @@ fi
 # Execute selected commands
 for category in "${ordered_categories[@]}"; do
   for option in ${selections[$category]}; do
-    #echo "Running: $CLI_WORKDIR/commands/$category $option"
+    echo "Configuring $category $option"
+    #sleep 0.3
     $CLI_WORKDIR/commands/"$category" "$option"
   done
 done
+
+echo "Configuration finished"
