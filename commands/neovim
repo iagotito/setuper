@@ -25,7 +25,7 @@ neovim_install() {
 	fuse_install
 	echo "Downloading neovim"
 	sudo mkdir -p $NEOVIM_DIR
-	sudo wget --quiet --output-document=$NEOVIM_DIR/nvim.appimage https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+	sudo wget --output-document=$NEOVIM_DIR/nvim.appimage https://github.com/neovim/neovim/releases/download/v0.10.4/nvim-linux-x86_64.appimage
 	sudo chmod 755 $NEOVIM_DIR
 	sudo chmod +x $NEOVIM_DIR/nvim.appimage
 	sudo ln -s -T $NEOVIM_DIR/nvim.appimage /usr/bin/nvim || true
