@@ -4,7 +4,7 @@ set -e
 
 cli_help() {
   echo "
-Command: tmuc [install | dotfiles | all]
+Command: tmux [install | dotfiles | all]
 Usage:
   install  -> install tmux
   dotfiles -> create symlinks to tmux dotfiles
