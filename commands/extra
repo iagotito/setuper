@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -e
+
+cli_help() {
+  echo "
+Command: extra [gitmoji | all]
+Usage:
+  gitmoji -> setup gitmoji-fuzzy-hook executable
+  all     -> run all commands above"
+
+  exit 1
+}
+
+GITMOJI_FH_BIN_PATH="$DOTFILES/zsh/plugins/gitmoji-fuzzy-hook/bin/gitmoji-fuzzy-hook-init.sh"
+GITMOJI_FH_LINK_NAME="gitmoji-fuzzy-hook-init"
+GITMOJI_FH_LINK_DEST="$HOME/.local/bin/"
+
+create_local_bin() {
+  mkdir -p $GITMOJI_FH_LINK_DEST
+}
+
+setup_gitmoji() {
+  create_local_bin
+
+  if [ ! -e "$GITMOJI_FH_LINK_DEST/$GITMOJI_FH_LINK_NAME" ] && [ -e $GITMOJI_FH_BIN_PATH ]
+  then
+    ln -s $GITMOJI_FH_BIN_PATH "$GITMOJI_FH_LINK_DEST/$GITMOJI_FH_LINK_NAME"
+  fi
+
+}
+
+[ ! -n "$1" ] && cli_help
+
+case "$1" in
+  gitmoji)
+	  setup_gitmoji
+    ;;
+  all)
+    setup_gitmoji
+  	;;
+  *)
+    cli_help
+    ;;
+esac

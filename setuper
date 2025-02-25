@@ -76,8 +76,11 @@ show_checklist "tmux" \
   "install" "Install tmux" off \
   "dotfiles" "Create symlinks to tmux dotfiles" off
 
+show_checklist "extra" \
+  "gitmoji" "Setup fuzzy-gitmoji-hook" off
+
 # I want to execute the commands with this "priority order"
-ordered_categories=("system" "programs" "terminal" "asdf" "neovim" "zsh" "tmux")
+ordered_categories=("system" "programs" "terminal" "asdf" "neovim" "zsh" "tmux" "extra")
 
 selected_options=""
 for category in "${ordered_categories[@]}"; do
